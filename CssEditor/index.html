@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Experiment Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts for style -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #7b2ff2;
+      --accent2: #f357a8;
+      --bg: #f5f7fa;
+      --panel-bg: #fff;
+      --panel-shadow: 0 8px 32px 0 rgba(31,38,135,0.09);
+      --panel-radius: 16px;
+      --panel-border: 1.5px solid #dadbe7;
+      --transition: .25s cubic-bezier(.77,0,.18,1);
+      --card-bg: #fcfcff;
+      --card-shadow: 0 4px 16px rgba(123,47,242,0.10);
+    }
+    html, body {
+      min-height: 100%;
+      margin: 0; padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(120deg, var(--accent) 0%, var(--accent2) 100%);
+      background-attachment: fixed;
+    }
+    body {
+      color: #1a1a25;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem 1rem;
+      color: #fff;
+      background: transparent;
+      letter-spacing: -.5px;
+    }
+    header h1 {
+      margin: 0 0 .3em 0;
+      font-size: 2.6em;
+      font-weight: 700;
+      text-shadow: 0 2px 16px #7b2ff280;
+    }
+    header p {
+      font-size: 1.25em;
+      margin: 0;
+      opacity: .88;
+    }
+
+    .instructions-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+      padding: 1.2em 1.3em 1em 1.3em;
+      margin: 2rem auto 1.5em auto;
+      border-left: 6px solid var(--accent);
+      display: flex;
+      align-items: flex-start;
+      gap: 1.1em;
+      max-width: 900px;
+      animation: fadein 0.7s;
+    }
+    .instructions-card .icon {
+      font-size: 2em;
+      margin-right: .2em;
+      flex-shrink: 0;
+      color: var(--accent2);
+      filter: drop-shadow(0 2px 4px #f357a833);
+    }
+    .instructions-card ul {
+      margin: 0.3em 0 0 0;
+      padding-left: 1.2em;
+    }
+    @keyframes fadein {
+      from { opacity:0; transform:translateY(-12px);}
+      to { opacity:1; transform:translateY(0);}
+    }
+
+    .main-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 2.8rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .editor-panel, .preview-panel {
+      background: var(--panel-bg);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--panel-shadow);
+      border: var(--panel-border);
+      transition: background var(--transition), box-shadow var(--transition);
+      min-width: 340px;
+      max-width: 450px;
+      flex: 1 1 380px;
+      padding: 2rem 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 420px;
+    }
+    .editor-panel {
+      z-index:2;
+    }
+    .panel h2, .preview-panel h2 {
+      margin-top: 0;
+      font-size: 1.22em;
+      letter-spacing: -.01em;
+      color: var(--accent);
+      text-shadow: 0 1px 4px #7b2ff220;
+    }
+    .tabgroup {
+      display: flex;
+      gap: .3em;
+      margin-bottom: 1em;
+    }
+    .tabgroup button {
+      background: linear-gradient(110deg, #f5f6ff 60%, #eaeaff 100%);
+      border: none;
+      outline: none;
+      border-radius: 7px 7px 0 0;
+      padding: .6em 1.2em;
+      font-family: inherit;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: -2px;
+      transition: background .2s;
+    }
+    .tabgroup button.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 3px 8px #7b2ff222;
+    }
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.08em;
+      background: #f8faff;
+      border: 1.5px solid #e0e0e6;
+      outline: none;
+      border-radius: 8px;
+      padding: 1em;
+      margin-bottom: 1em;
+      transition: border var(--transition), background var(--transition);
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    textarea:focus {
+      border-color: var(--accent);
+      background: #f0edfa;
+    }
+
+    .preview-panel {
+      align-items: center;
+      text-align: center;
+      z-index: 1;
+    }
+    .sample {
+      margin: 2.3rem auto 0 auto;
+      padding: 2.1rem 1.5rem;
+      width: 260px;
+      background: #fff;
+      border: 1.5px solid #d0d1e6;
+      border-radius: 10px;
+      box-shadow: 0 2px 16px #7b2ff226;
+      transition: box-shadow .25s, background .25s;
+    }
+    .sample h3 {
+      margin: .3em 0 0.7em 0;
+      font-size: 1.4em;
+      font-weight: 700;
+    }
+    .sample button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      padding: .5em 1.5em;
+      margin-top: 1.2em;
+      box-shadow: 0 2px 8px #7b2ff228;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .sample button:hover {
+      background: var(--accent2);
+    }
+
+    /* Example cards row + custom scrollbar */
+    .examples-row {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      margin: 0 auto 2rem auto;
+      max-width: 1150px;
+      width: 100%;
+      scroll-behavior: smooth;
+    }
+    /* Custom Scrollbar for Examples Row */
+    .examples-row::-webkit-scrollbar {
+      height: 14px;
+      background: #e9eaf7;
+      border-radius: 10px;
+    }
+    .examples-row::-webkit-scrollbar-thumb {
+      background: linear-gradient(120deg, var(--accent), var(--accent2));
+      border-radius: 14px;
+      min-width: 50px;
+      box-shadow: 0 1px 8px #7b2ff233;
+      border: 3px solid #e9eaf7;
+    }
+    .examples-row::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(110deg, #7b2ff2 70%, #f357a8 100%);
+    }
+    .examples-row::-webkit-scrollbar-corner { background: #e9eaf7; }
+    /* Firefox */
+    .examples-row {
+      scrollbar-color: var(--accent) #e9eaf7;
+      scrollbar-width: thin;
+    }
+
+    .example-card {
+      background: var(--card-bg);
+      border-radius: 13px;
+      box-shadow: var(--card-shadow);
+      border-left: 5px solid var(--accent2);
+      min-width: 230px;
+      max-width: 250px;
+      flex: 0 0 230px;
+      padding: 1em 1.1em 0.7em 1.1em;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      animation: fadein 0.8s;
+    }
+    .example-card h4 {
+      margin: 0 0 .7em 0;
+      color: var(--accent2);
+      font-weight: 700;
+      font-size: 1.1em;
+      letter-spacing: -.01em;
+    }
+    .example-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4em .7em;
+    }
+    .examples button {
+      margin: 0;
+      background: #eee;
+      color: var(--accent);
+      border: none;
+      border-radius: 6px;
+      padding: .2em .9em;
+      font-size: .97em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .examples button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* Docs card below all */
+    .docs-card {
+      background: var(--panel-bg);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--panel-shadow);
+      border: var(--panel-border);
+      margin: 0 auto 2.5rem auto;
+      max-width: 1100px;
+      padding: 2.2em 2em 2em 2em;
+      font-size: 1.08em;
+      color: #2a2a3a;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      animation: fadein 1s;
+    }
+    .docs-card h2 {
+      margin-top: 0;
+      color: var(--accent);
+      font-size: 1.3em;
+      margin-bottom: .8em;
+      display: flex;
+      align-items: center;
+      gap: .6em;
+    }
+    .docs-card h2 .icon {
+      font-size: 1.3em;
+      color: var(--accent2);
+    }
+    .docs-card ul {
+      padding-left: 1.3em;
+    }
+    .docs-card pre {
+      background: #f8f5ff;
+      font-size: 0.94em;
+      padding: .7em .8em;
+      border-radius: 7px;
+      margin: .5em 0;
+      color: #6726d1;
+      overflow-x: auto;
+    }
+    .docs-highlight {
+      background: #e9eaf7;
+      color: #7b2ff2;
+      padding: .1em .5em;
+      border-radius: 6px;
+      margin: 0 .15em;
+      font-size: .98em;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1150px) {
+      .main-row {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.8rem;
+      }
+      .examples-row {
+        justify-content: flex-start;
+      }
+      .editor-panel, .preview-panel {
+        max-width: none;
+        min-width: 0;
+      }
+      .docs-card {
+        max-width: 97vw;
+      }
+    }
+    @media (max-width: 600px) {
+      .main-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .editor-panel, .preview-panel, .instructions-card, .docs-card {
+        padding: 1.1rem .7rem;
+        min-width: unset;
+        max-width: unset;
+      }
+      .examples-row {
+        padding: 0 .3rem 1.2rem .3rem;
+        gap: .8rem;
+      }
+      .example-card {
+        min-width: 180px;
+        max-width: 200px;
+        font-size: .97em;
+      }
+    }
+  </style>
+  <!-- This style tag is for user-edited "website" CSS -->
+  <style id="user-global-css"></style>
+  <!-- This style tag is for the .sample box CSS -->
+  <style id="dynamic-css"></style>
+</head>
+<body>
+  <header>
+    <h1>CSS Experiment Playground</h1>
+    <p>Experiment with CSS, see instant results, learn &amp; style this site too!</p>
+  </header>
+  <div class="instructions-card">
+    <span class="icon" aria-label="Instructions">📝</span>
+    <div>
+      <strong>Instructions</strong>
+      <ul>
+        <li>Switch between <span class="docs-highlight">Sample CSS</span> and <span class="docs-highlight">Website CSS</span> tabs to edit preview or the website style.</li>
+        <li>Type or paste your CSS in the editor and see live updates.</li>
+        <li>Click example cards below to try ready-made CSS snippets.</li>
+        <li>Need help? See the <span class="docs-highlight">Docs &amp; Tips</span> at the bottom for CSS guidance.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="main-row">
+    <!-- CSS Editor Panel -->
+    <section class="editor-panel">
+      <div class="tabgroup">
+        <button id="tab-sample" class="active" onclick="switchTab('sample')">Sample CSS</button>
+        <button id="tab-website" onclick="switchTab('website')">Website CSS</button>
+      </div>
+      <textarea id="css-input" spellcheck="false" placeholder="Type CSS here..."></textarea>
+    </section>
+    <!-- Preview Panel -->
+    <section class="preview-panel">
+      <h2>Live Preview</h2>
+      <div class="sample" id="preview-sample" tabindex="0">
+        <h3>Hello, CSS!</h3>
+        <p>Edit the CSS to style me.<br><small>(Use <b>.sample</b> selector)</small></p>
+        <button>Button</button>
+      </div>
+    </section>
+  </div>
+  <!-- Examples as row of cards below the main panels -->
+  <div class="examples-row examples">
+    <div class="example-card">
+      <h4>Text &amp; Color</h4>
+      <div class="example-btns">
+        <button onclick="setExample('colorful')">Text Color</button>
+        <button onclick="setExample('gradientText')">Gradient Text</button>
+        <button onclick="setExample('fonts')">Fonts</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Borders &amp; Shadow</h4>
+      <div class="example-btns">
+        <button onclick="setExample('shadow')">Box Shadow</button>
+        <button onclick="setExample('rounded')">Rounded Corners</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Layout</h4>
+      <div class="example-btns">
+        <button onclick="setExample('flex')">Flex Center</button>
+        <button onclick="setExample('grid')">Grid Layout</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Buttons &amp; Hover</h4>
+      <div class="example-btns">
+        <button onclick="setExample('hover')">Hover Effect</button>
+        <button onclick="setExample('fancyButton')">Fancy Button</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Background</h4>
+      <div class="example-btns">
+        <button onclick="setExample('gradient')">Gradient BG</button>
+        <button onclick="setExample('pattern')">Pattern BG</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Animation</h4>
+      <div class="example-btns">
+        <button onclick="setExample('pulse')">Pulse</button>
+        <button onclick="setExample('spin')">Spin</button>
+      </div>
+    </div>
+    <div class="example-card">
+      <h4>Website Style</h4>
+      <div class="example-btns">
+        <button onclick="setExample('websiteGlass')">Glassmorphism</button>
+        <button onclick="setExample('websiteDark')">Dark Mode</button>
+      </div>
+    </div>
+  </div>
+  <!-- Docs Card -->
+  <div class="docs-card" aria-labelledby="docs-heading">
+    <h2 id="docs-heading"><span class="icon" aria-hidden="true">📚</span> Docs &amp; Tips</h2>
+    <ul>
+      <li><b>Selectors:</b> Use <code>.sample</code> for the preview, or <code>body</code>, <code>.editor-panel</code>, etc. for the website.</li>
+      <li><b>Common Properties:</b>
+        <ul>
+          <li><code>color</code>, <code>background</code>, <code>font-size</code>, <code>padding</code>, <code>margin</code></li>
+          <li><code>border</code>, <code>border-radius</code>, <code>box-shadow</code>, <code>transition</code></li>
+          <li><code>display: flex</code> / <code>grid</code> for layout</li>
+        </ul>
+      </li>
+      <li><b>Pseudo-classes:</b> <code>:hover</code>, <code>:active</code>, <code>:focus</code></li>
+      <li><b>Variables:</b> Use <code>var(--accent)</code> for site accent color.</li>
+      <li>
+        <b>Example:</b>
+        <pre><code>.sample {
+  color: #7b2ff2;
+  background: #e0e7ef;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px #7b2ff218;
+}</code></pre>
+      </li>
+      <li>
+        <b>More Resources:</b>
+        <ul>
+          <li><a href="https://css-tricks.com/" target="_blank">CSS-Tricks</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank">MDN CSS Reference</a></li>
+        </ul>
+      </li>
+    </ul>
+    <hr style="margin:1.4em 0;">
+    <b>Tip:</b> You can style the website itself! Switch to the <span class="docs-highlight">Website CSS</span> tab.<br>
+    Try:
+    <pre><code>body { font-family: 'Comic Sans MS', cursive; }
+.editor-panel { background: #ffeeddcc; }</code></pre>
+  </div>
+  <style id="user-global-css"></style>
+  <style id="dynamic-css"></style>
+  <script>
+    // Initial CSS values for both tabs
+    const initialSampleCSS = `.sample {
+  color: #2d3a59;
+  background: #f8fafc;
+  border-radius: 10px;
+  transition: all 0.3s;
+}`;
+    const initialWebsiteCSS = `:root {
+  --accent: #7b2ff2;
+  --accent2: #f357a8;
+  --bg: #f5f7fa;
+}
+body {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent2) 100%);
+}
+.editor-panel {
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 8px 32px 0 rgba(31,38,135,0.09);
+}`;
+    let currentTab = "sample";
+    // Tab switching logic
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tab-sample').classList.toggle('active', tab === "sample");
+      document.getElementById('tab-website').classList.toggle('active', tab === "website");
+      document.getElementById('css-input').value = (tab === "sample")
+        ? localStorage.getItem('css-sample') || initialSampleCSS
+        : localStorage.getItem('css-website') || initialWebsiteCSS;
+      updateCSS();
+    }
+    // Save & update CSS live
+    function updateCSS() {
+      const css = document.getElementById('css-input').value;
+      if (currentTab === "sample") {
+        document.getElementById('dynamic-css').textContent = css;
+        localStorage.setItem('css-sample', css);
+      } else {
+        document.getElementById('user-global-css').textContent = css;
+        localStorage.setItem('css-website', css);
+      }
+    }
+    document.getElementById('css-input').addEventListener('input', updateCSS);
+
+    // Examples for both sample and website
+    function setExample(example) {
+      let css = "";
+      // Sample box CSS examples
+      const sample = {
+        colorful: `.sample { color: #e91e63; background: #fffbe8; font-size: 1.3em; }`,
+        gradientText: `.sample h3 { background: linear-gradient(90deg, #7b2ff2, #f357a8); -webkit-background-clip: text; color: transparent; }`,
+        fonts: `.sample { font-family: 'Comic Sans MS', cursive; font-size: 1.15em; }`,
+        shadow: `.sample { box-shadow: 0 8px 24px rgba(90,120,200,0.16); border: none; }`,
+        rounded: `.sample { border-radius: 25px; border: 2px solid #f357a8; }`,
+        flex: `.sample { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }`,
+        grid: `.sample { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; } .sample h3, .sample p, .sample button { grid-column: 1 / -1; }`,
+        hover: `.sample button { background: #4a90e2; color: white; border: none; padding: 0.7em 1.4em; border-radius: 5px; cursor: pointer; transition: background 0.2s; }
+.sample button:hover { background: #2563eb; }`,
+        fancyButton: `.sample button { background: linear-gradient(90deg, #7b2ff2 0%, #f357a8 100%); color: #fff; border: none; border-radius: 20px; padding: .7em 2em; font-weight: 700; box-shadow: 0 2px 8px #7b2ff250; letter-spacing: .06em; }`,
+        gradient: `.sample { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: #2d3a59; }`,
+        pattern: `.sample { background: repeating-linear-gradient(45deg, #f357a8, #f357a8 10px, #fff 10px, #fff 20px); }`,
+        pulse: `.sample { animation: pulse 1.2s infinite alternate; }
+@keyframes pulse { to { box-shadow: 0 0 0 18px #7b2ff210; } }`,
+        spin: `.sample button { animation: spin 1.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }`
+      };
+      // Website-wide CSS examples
+      const website = {
+        websiteGlass: `.editor-panel, .preview-panel, .docs-card { background: rgba(255,255,255,0.65) !important; backdrop-filter: blur(18px); box-shadow: 0 8px 32px 0 #7b2ff222; }`,
+        websiteDark: `:root { --accent: #22223b; --accent2: #4a4e69; --bg: #232634; --panel-bg: #232634ee; --card-bg: #2d3142; }
+body { background: linear-gradient(120deg, var(--accent), var(--accent2)); color: #e0e1dd; }
+.editor-panel, .preview-panel, .docs-card { background: var(--panel-bg) !important; color: #e0e1dd; }
+.docs-card { background: var(--card-bg) !important; color: #dbeafe; }
+.example-card { background: var(--card-bg); color: #e0e1dd; }`
+      };
+      // Route based on tab or if example is website
+      if (website[example]) {
+        switchTab("website");
+        css = website[example];
+      } else if (sample[example]) {
+        switchTab("sample");
+        css = sample[example];
+      } else {
+        css = "";
+      }
+      document.getElementById('css-input').value = css;
+      updateCSS();
+    }
+
+    // Initialize editor with localStorage or default
+    function init() {
+      if (!localStorage.getItem('css-sample')) localStorage.setItem('css-sample', initialSampleCSS);
+      if (!localStorage.getItem('css-website')) localStorage.setItem('css-website', initialWebsiteCSS);
+      switchTab("sample");
+      updateCSS();
+    }
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
